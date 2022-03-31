@@ -13,7 +13,7 @@ import numpy as np
 # wav file handling
 import scipy.io.wavfile as sio_wavfile
 
-def generate_beeps(dir, prefix, min, max, beep_len, beep_f, nro_beeps, seed, repeats = 1):
+def generate_beeps(dir, prefix, min, max, beep_len, beep_f, nro_beeps, repeats = 1):
     """
     Generate delayed beeps for naming experiments in AAA.
     Filenames will be [prefix]_[seed]_[running number].wav.
@@ -52,7 +52,7 @@ def generate_beeps(dir, prefix, min, max, beep_len, beep_f, nro_beeps, seed, rep
     return beep_names
 
 
-def generate_stimulus_list(output_dir, prefix, stimuli, calibration, id, beep_names, repeats = 1, half_way_break = False):
+def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names, repeats = 1, half_way_break = False):
 
     n = len(stimuli)
 	
@@ -138,8 +138,8 @@ def main(args):
         # Setting the seed here makes the generated wait times and permutations reproducible.
         np.random.seed(id)
 
-        beep_names = generate_beeps(participant_dir, participant_prefix, 1.2, 1.8, 0.05, 1000, len(stimuli), id)
-        generate_stimulus_list(output_dir, participant_prefix, stimuli, calibration, id, beep_names)
+        beep_names = generate_beeps(participant_dir, participant_prefix, 1.2, 1.8, 0.05, 1000, len(stimuli))
+        generate_stimulus_list(output_dir, participant_prefix, stimuli, calibration, beep_names)
 
 
 if (len(sys.argv) not in [5]):
