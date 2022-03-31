@@ -13,7 +13,7 @@ import numpy as np
 # wav file handling
 import scipy.io.wavfile as sio_wavfile
 
-def generate_beeps(prefix, min, max, beep_len, beep_f, nro_beeps, seed, repeats = 1):
+def generate_beeps(dir, prefix, min, max, beep_len, beep_f, nro_beeps, seed, repeats = 1):
     """
     Generate delayed beeps for naming experiments in AAA.
     Filenames will be [prefix]_[seed]_[running number].wav.
@@ -34,109 +34,84 @@ def generate_beeps(prefix, min, max, beep_len, beep_f, nro_beeps, seed, repeats 
         raise ValueError("Having more than one repeat not yet implemented. repeats = " + str(repeats))
 
     fs = 44100
-    beep_len = np.floor(round(beep_len*fs))
-    min_len = np.floor(round(min*fs))
-    max_len = np.floor(round(max*fs))
+    beep_len = int(round(beep_len*fs))
+    min_len = int(round(min*fs))
+    max_len = int(round(max*fs))
     audio_len = beep_len + max_len
 
     audio = np.zeros(audio_len)
-    audio[-beep_len+1:] = np.sin(np.multiply(2*np.pi*beep_f/fs, list(range(1,beep_len+1))))
+    audio[-beep_len:] = np.sin(np.multiply(2*np.pi*beep_f/fs, list(range(1,beep_len+1))))
     
-    if seed >= 0:
-        random.seed(seed)
-
     beep_names = []
     for i in range(nro_beeps):
-        filename = "{prefix:s}_{id:d}_{i:03d}.wav".format(prefix = prefix, id = seed, i = i)
+        filename = "{prefix:s}_{i:03d}.wav".format(prefix = prefix, i = i+1)
         beep_names.append(filename)
-        delay = random.uniform(min_len, max_len)
-        sio_wavfile.write(filename, fs, audio[delay:])
+        delay = int(np.random.uniform(min_len, max_len))
+        sio_wavfile.write(dir/filename, fs, audio[-(delay+beep_len):])
 
     return beep_names
 
 
-def write_results(table, filename):
-    # Finally dump all the metadata into a csv-formated file to
-    # be read by Python or R.
-    with closing(open(filename, 'w')) as csvfile:
-        fieldnames = ['id', 'speaker', 'sliceBegin', 'beep', 'begin', 'end', 'word']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames,
-                                quoting=csv.QUOTE_NONNUMERIC)
-
-        writer.writeheader()
-        map(writer.writerow, table)
-
-    print("Wrote file " + filename + " for R/Python.")
-
-
-def generate_stimulus_list(output_dir, stimuli, calibration, id, beep_names, repeats = 1, half_way_break = False):
-
-    if repeats != 1:
-        raise ValueError("Having more than one repeat not yet tested. repeats = " + str(repeats))
+def generate_stimulus_list(output_dir, prefix, stimuli, calibration, id, beep_names, repeats = 1, half_way_break = False):
 
     n = len(stimuli)
 	
-    indeces = matrix(, nrow=n, ncol=repeats)
-    indeces[,1] = sample.int(n)
-    i = 2
-    while (i <= repeats){
-        indeces[,i] = sample.int(n)
+    indeces = np.zeros((n, repeats))
+    indeces[:,0] = np.random.permutation(n)
+    i = 1
+    while (i < repeats):
+        indeces[:,i] = np.random.permutation(n)
         
         # If last token of previous block and the first token of this block 
         # would be the same, regenerate this block.
-        if (indeces[n,i-1] == indeces[1,i]){
+        if indeces[n,i-1] == indeces[1,i]:
             next
-        }
         i = i+1
-    }
-    indeces = as.vector(indeces)
-    tokens = stimuli[indeces]
 
+    indeces = indeces.reshape(n*repeats)
+    indeces = indeces.astype(int)
+    tokens = [stimuli[i] for i in indeces]
+
+    # Generate dot counters to indicate number of repeats and add the to the stimulus stimuli.
     counters = []
     counter = ""
     for i in range(repeats):
         counter += "."
-        counters.append(counter)
+        counters.append([counter]*n)
+    # Flatten the counter list
+    counters = [counter for repeat in counters for counter in repeat]
 
-    # Generate dot counters to indicate number of repeats and add the to the stimulus stimuli.
-    counters = as.vector(matrix(c(".","..","..."), nrow=n, ncol=repeats, byrow=T))
-    tokens = apply(data.frame(tokens, counters), 1, paste, collapse=" ") 
+    tokens = [token + " " + counter for (token, counter) in zip(tokens, counters)]
 
     m = len(tokens)
     l = len(calibration)
 
-    # Generate beep wav-file names and combine them to a table with the tokens.
-    # Beep files are [prefix]_[seed]_[running number].wav.
-    beeps = apply(data.frame(file_prefix, sprintf("_%03d", 1:(m)), ".wav"), 1, paste, collapse="")
-    tokens = cbind(prompt = tokens, bmp = " ", wav = beeps)
+    # Combine beep wav file names to a table with the tokens.
+    tokens = [{'prompt': token, 'bmp': " ", 'wav': beep} for (token, beep) in zip(tokens, beep_names)]
 
     if half_way_break:
         # Generate calibration, counters and leave beeps out of the table.
-        calibration_counters = c(".","..","...", "....")
-        calibration = apply(expand.grid(calibration, calibration_counters), 1, paste, collapse = " ")
-        calibration = cbind(prompt = calibration, bmp = " ", wav = "")
+        calibration_counters = [".","..","...", "...."]
+        calibration = [cal + " " + counter for (cal, counter) in zip(calibration, calibration_counters)]
+        calibration = [{'prompt': cal, 'bmp': " ", 'wav': " "} for cal in calibration]
 
-        tokens = c(
-            calibration[1:l], tokens[1:(m/2)], calibration[(l+1):(2*l)],
-            calibration[(2*l+1):(3*l)], tokens[(m/2+1):(m)], calibration[(3*l+1):(4*l)]
-        )
+        tokens = calibration[:l] + tokens[:int(m/2)] + calibration[l:2*l]
+        tokens += calibration[2*l:3*l] + tokens[int(m/2):] + calibration[3*l:]
     else:
         # Generate calibration, counters and leave beeps out of the table.
-        calibration_counters = c(".","..")
-        calibration = apply(expand.grid(calibration, calibration_counters), 1, paste, collapse = " ")
-        calibration = cbind(prompt = calibration, bmp = " ", wav = "")
+        calibration_counters = [".",".."]
+        calibration = [cal + " " + counter for (cal, counter) in zip(calibration, calibration_counters)]
+        calibration = [{'prompt': cal, 'bmp': " ", 'wav': " "} for cal in calibration]
 
-        tokens = c(calibration[1:l], tokens, calibration[(l+1):(2*l)])
+        tokens = calibration[:l] + tokens + calibration[l:]
 
-    with closing(open(filename, 'w')) as csvfile:
-        fieldnames = ['token', 'bmp', 'beep']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames,
-                                quoting=csv.QUOTE_NONNUMERIC)
+    filename = output_dir / (prefix + ".csv")
+    with closing(open(filename, 'w', newline='\r\n')) as csvfile:
+        line = "\"{prompt:s}\",\" \",\"{beep:s}\"\n"
+        for token in tokens:
+            csvfile.write(line.format(prompt = token['prompt'], beep = token['wav']))
 
-        writer.writeheader()
-        map(writer.writerow, tokens)
-
-    print("Wrote file " + filename + ".")
+    print("Wrote file " + str(filename) + ".")
 
 
 def read_recording_names(filename):
@@ -150,20 +125,24 @@ def main(args):
     if not output_dir.exists():
         output_dir.mkdir()
     
-    nro_participants = args.pop()
+    nro_participants = int(args.pop())
     calibration = read_recording_names(args.pop())
     stimuli = read_recording_names(args.pop())
 
     for id in range(1,nro_participants+1):
-        participant_prefix = (prefix + '_' + str(id))
+        participant_prefix = (prefix + '_P' + str(id))
         participant_dir = output_dir / participant_prefix        
-        if not participant_dir:
+        if not participant_dir.exists():
             participant_dir.mkdir()
+
+        # Setting the seed here makes the generated wait times and permutations reproducible.
+        np.random.seed(id)
+
         beep_names = generate_beeps(participant_dir, participant_prefix, 1.2, 1.8, 0.05, 1000, len(stimuli), id)
-        generate_stimulus_list(participant_dir, participant_prefix, stimuli, calibration, id, beep_names)
+        generate_stimulus_list(output_dir, participant_prefix, stimuli, calibration, id, beep_names)
 
 
-if (len(sys.argv) not in [3,4]):
+if (len(sys.argv) not in [5]):
     print("\ngenerate_delayed_naming_stimulus_list.py")
     print("\tusage: python generate_delayed_naming_stimulus_list.py stimuli calibration numberOfParticipants prefix")
     sys.exit(0)
