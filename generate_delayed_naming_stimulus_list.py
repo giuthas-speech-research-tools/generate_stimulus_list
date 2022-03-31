@@ -13,7 +13,7 @@ import numpy as np
 # wav file handling
 import scipy.io.wavfile as sio_wavfile
 
-def generate_beeps(dir, prefix, min, max, beep_len, beep_f, nro_beeps, repeats = 1):
+def generate_beeps(dir, prefix, min, max, beep_len, beep_f, nro_stimuli, repeats = 1):
     """
     Generate delayed beeps for naming experiments in AAA.
     Filenames will be [prefix]_[seed]_[running number].wav.
@@ -24,14 +24,10 @@ def generate_beeps(dir, prefix, min, max, beep_len, beep_f, nro_beeps, repeats =
     max = maximum length of wait i.e. silence in the beginning
     beep_len = lenght of the stimulus beep
     beep_f = frequency of the stimulus beep
-    nro_beeps = number of randomised beep files to generate
-    seed = random number seed for the generator, must be a non-negative
-      integer. If a negative number is given as the seed, it will not be
-      used. This feature can be used to generate consecutive batches of
-      pseudorandom beeps without resetting the seed between batches.
+    nro_stimuli = number of stimuli that need a beep
+    repeats = number of times the stimuli are repeated
     """
-    if repeats != 1:
-        raise ValueError("Having more than one repeat not yet implemented. repeats = " + str(repeats))
+    nro_beeps = nro_stimuli * repeats
 
     fs = 44100
     beep_len = int(round(beep_len*fs))
@@ -120,6 +116,9 @@ def read_recording_names(filename):
 
 
 def main(args):
+    repeats = 1
+    if len(args) == 6:
+        repeats = int(args.pop())
     prefix = args.pop()
     output_dir = Path(prefix)
     if not output_dir.exists():
@@ -138,13 +137,13 @@ def main(args):
         # Setting the seed here makes the generated wait times and permutations reproducible.
         np.random.seed(id)
 
-        beep_names = generate_beeps(participant_dir, participant_prefix, 1.2, 1.8, 0.05, 1000, len(stimuli))
-        generate_stimulus_list(output_dir, participant_prefix, stimuli, calibration, beep_names)
+        beep_names = generate_beeps(participant_dir, participant_prefix, 1.2, 1.8, 0.05, 1000, len(stimuli), repeats)
+        generate_stimulus_list(output_dir, participant_prefix, stimuli, calibration, beep_names, repeats)
 
 
-if (len(sys.argv) not in [5]):
+if (len(sys.argv) not in [5, 6]):
     print("\ngenerate_delayed_naming_stimulus_list.py")
-    print("\tusage: python generate_delayed_naming_stimulus_list.py stimuli calibration numberOfParticipants prefix")
+    print("\tusage: python generate_delayed_naming_stimulus_list.py stimuli calibration numberOfParticipants prefix [repeats]")
     sys.exit(0)
 
 
