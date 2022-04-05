@@ -1,0 +1,5 @@
+# suomi
+python generate_delayed_naming_stimulus_list.py stimuli.csv calibration.csv 30 fin-1
+
+# italia
+python generate_delayed_naming_stimulus_list.py stimuli_italian.csv calibration_english.csv 30 ita-1
