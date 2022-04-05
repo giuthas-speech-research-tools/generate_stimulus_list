@@ -1,3 +1,10 @@
+# emacs autosaves
+*~
+
+# Generated files
+fin-1/
+ita-1/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
