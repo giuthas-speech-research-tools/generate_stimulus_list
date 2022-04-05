@@ -68,16 +68,18 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
     indeces = indeces.astype(int)
     tokens = [stimuli[i] for i in indeces]
 
-    # Generate dot counters to indicate number of repeats and add the to the stimulus stimuli.
-    counters = []
-    counter = ""
-    for i in range(repeats):
-        counter += "."
-        counters.append([counter]*n)
-    # Flatten the counter list
-    counters = [counter for repeat in counters for counter in repeat]
+    # Generate dot counters to indicate number of repeats and add them to the prompts.
+    if repeats > 1:
+        counters = []
+        counter = ""
+        for i in range(repeats):
+            counter += "."
+            counters.extend([counter]*n)
+        # Flatten the counter list
+        counters = [counter for repeat in counters for counter in repeat]
 
-    tokens = [token + " " + counter for (token, counter) in zip(tokens, counters)]
+        tokens = [token + " " + counter for (token, counter) in zip(tokens, counters)]
+
 
     m = len(tokens)
     l = len(calibration)
@@ -87,7 +89,12 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
 
     if half_way_break:
         # Generate calibration, counters and leave beeps out of the table.
-        calibration_counters = [".","..","...", "...."]
+        calibration = calibration * 4
+        calibration_counters = []
+        counter = ""
+        for i in range(4):
+            counter += "."
+            calibration_counters.extend([counter]*l)
         calibration = [cal + " " + counter for (cal, counter) in zip(calibration, calibration_counters)]
         calibration = [{'prompt': cal, 'bmp': " ", 'wav': " "} for cal in calibration]
 
@@ -95,7 +102,12 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
         tokens += calibration[2*l:3*l] + tokens[int(m/2):] + calibration[3*l:]
     else:
         # Generate calibration, counters and leave beeps out of the table.
-        calibration_counters = [".",".."]
+        calibration = calibration * 2
+        calibration_counters = []
+        counter = ""
+        for i in range(2):
+            counter += "."
+            calibration_counters.extend([counter]*l)
         calibration = [cal + " " + counter for (cal, counter) in zip(calibration, calibration_counters)]
         calibration = [{'prompt': cal, 'bmp': " ", 'wav': " "} for cal in calibration]
 
@@ -110,9 +122,10 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
     print("Wrote file " + str(filename) + ".")
 
 
-def read_recording_names(filename):
-    with closing(open(filename, 'r')) as file:
-        return [line.rstrip() for line in file]
+def read_prompts(filename):
+    with closing(open(filename, 'r', newline='')) as csv_file:
+        reader = csv.reader(csv_file, quotechar = '"')
+        return [prompt[0] for prompt in reader]
 
 
 def main(args):
@@ -125,8 +138,8 @@ def main(args):
         output_dir.mkdir()
     
     nro_participants = int(args.pop())
-    calibration = read_recording_names(args.pop())
-    stimuli = read_recording_names(args.pop())
+    calibration = read_prompts(args.pop())
+    stimuli = read_prompts(args.pop())
 
     for id in range(1,nro_participants+1):
         participant_prefix = (prefix + '_P' + str(id))
