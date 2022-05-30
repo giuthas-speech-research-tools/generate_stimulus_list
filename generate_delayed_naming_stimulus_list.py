@@ -127,7 +127,13 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
 def read_prompts(filename):
     with closing(open(filename, 'r', newline='')) as csv_file:
         reader = csv.reader(csv_file, quotechar = '"')
-        return [prompt[0] for prompt in reader]
+        prompts = [prompt[0] for prompt in reader]
+        for prompt in prompts:
+            if len(prompt.split("\t")):
+                print("Input files should contain only one word per line.")
+                print("Found instead this: {prompt}.", prompt = prompt) 
+                sys.exit()
+        return prompts
 
 
 def main(args):
