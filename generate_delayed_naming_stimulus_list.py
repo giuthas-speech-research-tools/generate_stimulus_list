@@ -1,3 +1,4 @@
+from audioop import reverse
 from contextlib import closing
 import csv
 from fileinput import filename
@@ -100,8 +101,10 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
         calibration = [cal + " " + counter for (cal, counter) in zip(calibration, calibration_counters)]
         calibration = [{'prompt': cal, 'bmp': " ", 'wav': " "} for cal in calibration]
 
-        tokens = calibration[:l] + tokens[:int(m/2)] + calibration[l:2*l]
-        tokens += calibration[2*l:3*l] + tokens[int(m/2):] + calibration[3*l:]
+        # Note that the final calibrations happen in reverse order in case there are 
+        # tasks like a tap test for synchrony that should be done without the participant.
+        tokens = calibration[:l] + tokens[:int(m/2)] + list(reversed(calibration[l:2*l]))
+        tokens += calibration[2*l:3*l] + tokens[int(m/2):] + list(reversed(calibration[3*l:]))
     else:
         # Generate calibration, counters and leave beeps out of the table.
         calibration = calibration * 2
@@ -113,7 +116,9 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
         calibration = [cal + " " + counter for (cal, counter) in zip(calibration, calibration_counters)]
         calibration = [{'prompt': cal, 'bmp': " ", 'wav': " "} for cal in calibration]
 
-        tokens = calibration[:l] + tokens + calibration[l:]
+        # Note that the final calibration happens in reverse order in case there are 
+        # tasks like a tap test for synchrony that should be done without the participant.
+        tokens = calibration[:l] + tokens + list(reversed(calibration[l:]))
 
     filename = output_dir / (prefix + ".csv")
     with closing(open(filename, 'w', newline='\r\n')) as csvfile:
@@ -129,7 +134,7 @@ def read_prompts(filename):
         reader = csv.reader(csv_file, quotechar = '"')
         prompts = [prompt[0] for prompt in reader]
         for prompt in prompts:
-            if len(prompt.split("\t")):
+            if len(prompt.split("\t")) > 1:
                 print("Input files should contain only one word per line.")
                 print("Found instead this: {prompt}.", prompt = prompt) 
                 sys.exit()
