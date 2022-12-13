@@ -1,18 +1,18 @@
-from audioop import reverse
-from contextlib import closing
 import csv
-from fileinput import filename
 import glob
 import os
-from pathlib import Path
 import random
 import sys
 import time
+from audioop import reverse
+from contextlib import closing
+from fileinput import filename
+from pathlib import Path
 
 import numpy as np
-
 # wav file handling
 import scipy.io.wavfile as sio_wavfile
+
 
 def generate_beeps(dir, prefix, min_delay, max_delay, beep_len, beep_f, nro_stimuli, repeats = 1):
     """
@@ -131,7 +131,7 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
 
 def read_prompts(filename):
     with closing(open(filename, 'r', newline='')) as csv_file:
-        reader = csv.reader(csv_file, quotechar = '"')
+        reader = csv.reader(csv_file, quotechar = '"', delimiter="\t")
         prompts = [prompt[0] for prompt in reader]
         for prompt in prompts:
             if len(prompt.split("\t")) > 1:
