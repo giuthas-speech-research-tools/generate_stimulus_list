@@ -63,7 +63,7 @@ def generate_stimulus_list(output_dir, prefix, stimuli, calibration, beep_names,
         
         # If last token of previous block and the first token of this block 
         # would be the same, regenerate this block.
-        if indeces[n,i-1] == indeces[1,i]:
+        if indeces[n-1,i-1] == indeces[1,i]:
             next
         i = i+1
 
@@ -143,7 +143,8 @@ def read_prompts(filename):
 
 def main(args):
     repeats = 1
-    if len(args) == 6:
+    print(args)
+    if len(args) == 5:
         repeats = int(args.pop())
     prefix = args.pop()
     output_dir = Path(prefix)
