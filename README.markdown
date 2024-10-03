@@ -31,6 +31,7 @@ versions will be more versatile.
 - [ ] Main code modernization:
   - [x] Start using branches in git
   - [ ] Come up with a better package name and check that it is available on PyPi
+    - [ ] When you do, also add this into zotero and delete this todo item
   - [ ] Move the code to source directory
   - [ ] Get a package management tool
     - [ ] Create environments for at least: stable version, development, testing
