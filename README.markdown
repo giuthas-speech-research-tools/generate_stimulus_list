@@ -28,7 +28,7 @@ versions will be more versatile.
 
 ## Roadmap to 2.0
 
-- [ ] Main modernization:
+- [ ] Main code modernization:
   - [x] Start using branches in git
   - [ ] Come up with a better package name and check that it is available on PyPi
   - [ ] Move the code to source directory
@@ -38,7 +38,10 @@ versions will be more versatile.
     - [ ] Provide an entry point for installation
     - [ ] Upload on PyPi
   - [ ] Start using license headers
-- [ ] Smaller details
+- [ ] Features for users:
+  - [ ] Add a batch run options file so that settings can be saved and
+    replicated.
+  - [ ] Make beep generation optional
   - [ ] Add option of using end_calibration as an input file
   - [ ] Write exporter to RASL format
   - [ ] Provide examples
