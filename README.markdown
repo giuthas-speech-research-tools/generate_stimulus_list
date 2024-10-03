@@ -29,7 +29,7 @@ versions will be more versatile.
 ## Roadmap to 2.0
 
 - [ ] Main modernization:
-  - [ ] Start using branches in git
+  - [x] Start using branches in git
   - [ ] Come up with a better package name and check that it is available on PyPi
   - [ ] Move the code to source directory
   - [ ] Get a package management tool
