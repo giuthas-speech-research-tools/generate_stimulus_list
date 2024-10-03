@@ -1,7 +1,10 @@
+# Hide local files and directories here
+local/
+
 # emacs autosaves
 *~
 
-# Generated files
+# Generated example files
 fin-1/
 ita-1/
 
