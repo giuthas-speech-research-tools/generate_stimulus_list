@@ -35,9 +35,12 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
     - [ ] Provide an entry point for running as a generic commandline tool
     - [ ] Upload on PyPi
   - [ ] Implement the cli in click
-  - [ ] Generate docs
-  - [ ] Start using license headers
-
+  - [ ] Documentation
+	  - [ ] generate API
+	  - [ ] write usage samples etc
+	  - [ ] see that the CLI helps work as they should
+  - [ ] Start using license headers  
+  
 ### Roadmap after 2.0
 - [ ] Add a batch run options file so that settings can be saved and
   replicated.
@@ -51,12 +54,12 @@ Possibly also:
 
 - [ ] testing, which might rely on the examples
 
-## [1.1] 
+## [1.0.2] 2024-11-11
 
 ### Changed
-- Package name is now the simpler Generate Stimulus List. 
+- Package name is now the simpler Generate Stimulus List.
+- Updated Roadmap above
 
 ### Added
 
-- This Changelog
-- 
+- This Changelog.
