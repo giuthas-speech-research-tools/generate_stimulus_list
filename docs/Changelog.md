@@ -24,7 +24,7 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
-Roadmap to 2.0
+### Roadmap to 2.0
 - [ ] Main code modernization:
   - [x] Start using branches in git
   - [x] Come up with a better package name and check that it is available on PyPi
@@ -32,16 +32,20 @@ Roadmap to 2.0
   - [ ] Get a package management tool
     - [ ] Create environments for at least: stable version, development, testing
     - [ ] Proper python packaging for installation
-    - [ ] Provide an entry point for installation
+    - [ ] Provide an entry point for running as a generic commandline tool
     - [ ] Upload on PyPi
+  - [ ] Implement the cli in click
+  - [ ] Generate docs
   - [ ] Start using license headers
-- [ ] Features for users:
-  - [ ] Add a batch run options file so that settings can be saved and
-    replicated.
-  - [ ] Make beep generation optional
-  - [ ] Add option of using end_calibration as an input file
-  - [ ] Write exporter to RASL format
-  - [ ] Provide examples
+
+### Roadmap after 2.0
+- [ ] Add a batch run options file so that settings can be saved and
+  replicated.
+- [ ] Make beep generation optional
+- [ ] Make randomisation optional
+- [ ] Add option of using end_calibration as an input file
+- [ ] Write exporter to RASL format
+- [ ] Provide examples
 
 Possibly also:
 
@@ -50,3 +54,9 @@ Possibly also:
 ## [1.1] 
 
 ### Changed
+- Package name is now the simpler Generate Stimulus List. 
+
+### Added
+
+- This Changelog
+- 
