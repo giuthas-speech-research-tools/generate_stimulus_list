@@ -28,7 +28,7 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - [ ] Main code modernization:
   - [x] Start using branches in git
   - [x] Come up with a better package name and check that it is available on PyPi
-  - [ ] Move the code to source directory
+  - [x] Move the code to source directory
   - [ ] Get a package management tool
     - [ ] Create environments for at least: stable version, development, testing
     - [ ] Proper python packaging for installation
