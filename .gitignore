@@ -4,6 +4,10 @@ local/
 # emacs autosaves
 *~
 
+# IDE dirs and files
+.idea
+.vscode
+
 # Generated example files
 fin-1/
 ita-1/

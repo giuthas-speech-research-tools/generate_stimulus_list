@@ -1,4 +1,4 @@
-# Stimulus List Generation
+# Generate Stimulus List 
 
 This Python package provides stimulus list generation for phonetics
 experiments, delayed naming etc. This is not meant as a replacement of programs
@@ -28,27 +28,7 @@ versions will be more versatile.
 
 ## Roadmap to 2.0
 
-- [ ] Main code modernization:
-  - [x] Start using branches in git
-  - [ ] Come up with a better package name and check that it is available on PyPi
-  - [ ] Move the code to source directory
-  - [ ] Get a package management tool
-    - [ ] Create environments for at least: stable version, development, testing
-    - [ ] Proper python packaging for installation
-    - [ ] Provide an entry point for installation
-    - [ ] Upload on PyPi
-  - [ ] Start using license headers
-- [ ] Features for users:
-  - [ ] Add a batch run options file so that settings can be saved and
-    replicated.
-  - [ ] Make beep generation optional
-  - [ ] Add option of using end_calibration as an input file
-  - [ ] Write exporter to RASL format
-  - [ ] Provide examples
-
-Possibly also:
-
-- [ ] testing, which might rely on the examples
+The Roadmap to 2.0 now lives in the [Changelog](docs/Changelog.md).
 
 ## Copyright and License
 
